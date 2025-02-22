@@ -5,6 +5,7 @@ import ru.mikhailov.springcourse.Models.TaskStatus;
 
 import java.time.LocalDate;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 
@@ -13,7 +14,7 @@ import java.util.Scanner;
 public class Console {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        TaskService taskService = new TaskService();
+        TaskRepository taskService = new TaskRepository();
 
         while (true) {
             System.out.print("Vvedite komandу (add, list, update, delete, filter, sort, exit): ");
@@ -34,7 +35,7 @@ public class Console {
                     System.out.print("Vvedite dedlajn (YYYY-MM-DD): ");
                     LocalDate deadline = LocalDate.parse(scanner.next());
 
-                    Task newTask = taskService.createTask(taskService.getTasks().size(), taskName, description, status, deadline);
+                    Task newTask = taskService.createTask(taskName, description, status, deadline);
                     System.out.println("Zadacha dobavlena: " + newTask);
                     break;
 
@@ -61,8 +62,9 @@ public class Console {
                     System.out.print("Vvedite novyj dedlajn (YYYY-MM-DD): ");
                     LocalDate newDeadline = LocalDate.parse(scanner.next());
 
-                    taskService.updateTask(updateId, newTaskName, newDescription, newStatus, newDeadline);
-                    System.out.println("Zadacha obnovlena!");
+                    Optional<Task> updatedTask =taskService.updateTask(updateId, newTaskName, newDescription, newStatus, newDeadline);
+                    if(updatedTask.isPresent()) {System.out.println("Zadacha obnovlena!");}
+                    else {System.out.println("Zadacha c id" +updateId+" ne naidena");}
                     break;
 
                 case "filter":
@@ -87,8 +89,10 @@ public class Console {
                 case "delete":
                     System.out.print("Vvedite ID zadachi: ");
                     int deleteId = scanner.nextInt();
-                    taskService.deleteTask(deleteId);
-                    System.out.println("Zadacha udalena!");
+                    boolean isDeleted= taskService.deleteTask(deleteId);
+                    if(isDeleted) {
+                    System.out.println("Zadacha udalena!");}
+                    else{System.out.println("Zadacha c id" +deleteId+" ne naidena");}
                     break;
 
                 case "exit":

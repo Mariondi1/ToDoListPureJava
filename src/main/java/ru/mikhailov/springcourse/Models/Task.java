@@ -16,4 +16,13 @@ public class Task {
     private String description;
     private TaskStatus status;
     private LocalDate deadline;
+
+    public Task(String taskName, String description, TaskStatus status, LocalDate deadline) {
+        this.taskName = taskName;
+        this.description = description;
+        this.status = status;
+        this.deadline = deadline;
+    }
 }
+
+

@@ -2,24 +2,25 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.mikhailov.springcourse.Models.Task;
 import ru.mikhailov.springcourse.Models.TaskStatus;
-import ru.mikhailov.springcourse.TaskService;
+import ru.mikhailov.springcourse.TaskRepository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class TaskServiceTest {
-    private TaskService taskService;
+    private TaskRepository taskService;
 
     @BeforeEach
     void setUp() {
-        taskService = new TaskService();
+        taskService = new TaskRepository();
     }
 
     @Test
     void testCreateTask() {
-        Task newTask = taskService.createTask(1, "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
+        Task newTask = taskService.createTask( "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
 
         // Проверяем, что задача добавлена в список
         assertEquals(1, taskService.getTasks().size());
@@ -36,10 +37,10 @@ class TaskServiceTest {
 
     @Test
     void testUpdateTask() {
-        Task newTask = taskService.createTask(1, "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
-        List<Task> updateTasks=taskService.updateTask(1,"UpdateTask","UpdateDescription",TaskStatus.DONE,LocalDate.of(2025,2,22));
+        Task newTask = taskService.createTask( "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
+        Optional<Task> updateTasks=taskService.updateTask(1,"UpdateTask","UpdateDescription",TaskStatus.DONE,LocalDate.of(2025,2,22));
         assertFalse(updateTasks.isEmpty());
-        Task updateTask = updateTasks.get(0);
+        Task updateTask = updateTasks.get();
 
 
         assertEquals(1, taskService.getTasks().size());
@@ -51,7 +52,7 @@ class TaskServiceTest {
 
     @Test
     void testDeleteTask() {
-        Task newTask = taskService.createTask(1, "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
+        Task newTask = taskService.createTask( "TestTask", "TestDescription", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
         assertEquals(1, taskService.getTasks().size());
         assertTrue(taskService.getTasks().contains(newTask));
 
@@ -62,9 +63,9 @@ class TaskServiceTest {
 
     @Test
     void testFilterByStatus() {
-        Task newTask1 = taskService.createTask(1, "TestTask1", "TestDescription1", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
-        Task newTask2 = taskService.createTask(2, "TestTask2", "TestDescription2", TaskStatus.IN_PROGRESS, LocalDate.of(2025, 2, 20));
-        Task newTask3 = taskService.createTask(3, "TestTask3", "TestDescription3", TaskStatus.DONE, LocalDate.of(2025, 2, 20));
+        Task newTask1 = taskService.createTask( "TestTask1", "TestDescription1", TaskStatus.TODO, LocalDate.of(2025, 2, 20));
+        Task newTask2 = taskService.createTask( "TestTask2", "TestDescription2", TaskStatus.IN_PROGRESS, LocalDate.of(2025, 2, 20));
+        Task newTask3 = taskService.createTask( "TestTask3", "TestDescription3", TaskStatus.DONE, LocalDate.of(2025, 2, 20));
         assertEquals(3, taskService.getTasks().size());
 
         List<Task> filteredTasks = taskService.filterByStatus(TaskStatus.DONE);
@@ -75,9 +76,9 @@ class TaskServiceTest {
 
     @Test
     void testSortedByDeadline() {
-        Task newTask1 = taskService.createTask(1, "TestTask1", "TestDescription1", TaskStatus.TODO, LocalDate.of(2028, 2, 20));
-        Task newTask2 = taskService.createTask(2, "TestTask2", "TestDescription2", TaskStatus.IN_PROGRESS, LocalDate.of(2027, 2, 20));
-        Task newTask3 = taskService.createTask(3, "TestTask3", "TestDescription3", TaskStatus.DONE, LocalDate.of(2025, 2, 20));
+        Task newTask1 = taskService.createTask( "TestTask1", "TestDescription1", TaskStatus.TODO, LocalDate.of(2028, 2, 20));
+        Task newTask2 = taskService.createTask( "TestTask2", "TestDescription2", TaskStatus.IN_PROGRESS, LocalDate.of(2027, 2, 20));
+        Task newTask3 = taskService.createTask( "TestTask3", "TestDescription3", TaskStatus.DONE, LocalDate.of(2025, 2, 20));
         assertEquals(3, taskService.getTasks().size());
         assertTrue(taskService.getTasks().contains(newTask1));
         assertTrue(taskService.getTasks().contains(newTask2));

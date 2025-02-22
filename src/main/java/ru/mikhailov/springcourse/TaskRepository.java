@@ -9,44 +9,53 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 
 @Getter
-public class TaskService implements TaskMethod {
+public class TaskRepository implements TaskMethod {
     private final List<Task> tasks;
+    private static int nextId = 1;
 
-    public TaskService() {
+
+
+
+    public TaskRepository() {
         this.tasks = new ArrayList<>();
     }
 
 
-    public Task createTask(int id, String taskName, String description, TaskStatus status, LocalDate deadline) {
+    public Task createTask(String taskName, String description, TaskStatus status, LocalDate deadline) {
+        int id=nextId++;
         Task task = new Task(id, taskName, description, status, deadline);
         tasks.add(task);
         return task;
     }
 
-    public List <Task> updateTask(int id, String taskName, String description, TaskStatus status, LocalDate deadline) {
-        Task task=tasks.stream().filter(task1 -> task1.getId()==id).findFirst().orElse(null);
+    public Optional <Task> updateTask(int id, String taskName, String description, TaskStatus status, LocalDate deadline) {
 
-        assert task != null;
-        task.setTaskName(taskName);
-        task.setDescription(description);
-        task.setStatus(status);
-        task.setDeadline(deadline);
-        return List.of(task);
+        Optional<Task> optionalTask = tasks.stream()
+                .filter(task -> task.getId() == id)
+                .findFirst();
+
+
+        optionalTask.ifPresent(task -> {
+            task.setTaskName(taskName);
+            task.setDescription(description);
+            task.setStatus(status);
+            task.setDeadline(deadline);
+        });
+        return optionalTask;
     }
 
-    public void deleteTask(int id){
-        Task task=tasks.stream().filter(task1 -> task1.getId() == id).findFirst().orElse(null);
-        tasks.remove(task);
+    public boolean deleteTask(int id){
+        return tasks.removeIf(task -> task.getId() == id);
     }
 
     public List<Task> filterByStatus(TaskStatus status){
         return tasks.stream()
-                .filter(task -> task.getStatus()
-                .equals(status))
+                .filter(task -> task.getStatus() == status)
                 .collect(Collectors.toList());
     }
 
