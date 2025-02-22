@@ -2,7 +2,7 @@ package ru.mikhailov.springcourse;
 
 import lombok.Getter;
 import ru.mikhailov.springcourse.Models.Task;
-import ru.mikhailov.springcourse.Models.TaskMethod;
+import ru.mikhailov.springcourse.Models.TaskInterface;
 import ru.mikhailov.springcourse.Models.TaskStatus;
 
 import java.time.LocalDate;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 
 @Getter
-public class TaskRepository implements TaskMethod {
+public class TaskRepository implements TaskInterface {
     private final List<Task> tasks;
     private static int nextId = 1;
 
@@ -49,8 +49,12 @@ public class TaskRepository implements TaskMethod {
         return optionalTask;
     }
 
-    public boolean deleteTask(int id){
-        return tasks.removeIf(task -> task.getId() == id);
+    public Optional<Task> deleteTask(int id){
+        Optional<Task> optionalTask=tasks.stream()
+                .filter(task -> task.getId()==id)
+                .findFirst();
+        optionalTask.ifPresent(tasks::remove);
+        return optionalTask;
     }
 
     public List<Task> filterByStatus(TaskStatus status){

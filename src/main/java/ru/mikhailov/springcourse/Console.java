@@ -14,7 +14,7 @@ import java.util.Scanner;
 public class Console {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        TaskRepository taskService = new TaskRepository();
+        TaskRepository taskRepository = new TaskRepository();
 
         while (true) {
             System.out.print("Vvedite komandу (add, list, update, delete, filter, sort, exit): ");
@@ -35,13 +35,13 @@ public class Console {
                     System.out.print("Vvedite dedlajn (YYYY-MM-DD): ");
                     LocalDate deadline = LocalDate.parse(scanner.next());
 
-                    Task newTask = taskService.createTask(taskName, description, status, deadline);
+                    Task newTask = taskRepository.createTask(taskName, description, status, deadline);
                     System.out.println("Zadacha dobavlena: " + newTask);
                     break;
 
                 case "list":
                     System.out.println("Spisok zadach:");
-                    System.out.println(taskService.getTasks());
+                    System.out.println(taskRepository.getTasks());
 
                     break;
 
@@ -62,37 +62,38 @@ public class Console {
                     System.out.print("Vvedite novyj dedlajn (YYYY-MM-DD): ");
                     LocalDate newDeadline = LocalDate.parse(scanner.next());
 
-                    Optional<Task> updatedTask =taskService.updateTask(updateId, newTaskName, newDescription, newStatus, newDeadline);
-                    if(updatedTask.isPresent()) {System.out.println("Zadacha obnovlena!");}
-                    else {System.out.println("Zadacha c id" +updateId+" ne naidena");}
+                    Optional<Task> updatedTask =taskRepository.updateTask(updateId, newTaskName, newDescription, newStatus, newDeadline);
+                    if(updatedTask.isPresent()) {
+                        System.out.println("Zadacha obnovlena!");
+                    }
+                    else {
+                        System.out.println("Zadacha c id " +updateId+" ne naidena");
+                    }
                     break;
 
                 case "filter":
                     System.out.println("Vvedite status, po kotoromu khotite otfil'trovat' (TODO, IN_PROGRESS, DONE):");
+                    scanner.nextLine();
                     TaskStatus filterMethod = TaskStatus.valueOf(scanner.next().toUpperCase());
-                    if (filterMethod == TaskStatus.TODO) {
-                        System.out.println(taskService.filterByStatus(TaskStatus.TODO));
-                    } else if
-                    (filterMethod == TaskStatus.IN_PROGRESS) {
-                        System.out.println(taskService.filterByStatus(TaskStatus.IN_PROGRESS));
-                    } else {
-                        System.out.println(taskService.filterByStatus(TaskStatus.DONE));
-                    }
+                    System.out.println(taskRepository.filterByStatus(filterMethod));
                     break;
 
                 case "sort":
                     System.out.println("Zadachi otsortirovany po dedlajnu:");
                     scanner.nextLine();
-                    System.out.println(taskService.sortedByDeadline());
+                    System.out.println(taskRepository.sortedByDeadline());
                     break;
 
                 case "delete":
                     System.out.print("Vvedite ID zadachi: ");
                     int deleteId = scanner.nextInt();
-                    boolean isDeleted= taskService.deleteTask(deleteId);
-                    if(isDeleted) {
-                    System.out.println("Zadacha udalena!");}
-                    else{System.out.println("Zadacha c id" +deleteId+" ne naidena");}
+                    Optional<Task> deleteTask= taskRepository.deleteTask(deleteId);
+                    if(deleteTask.isPresent()) {
+                        System.out.println("Zadacha udalena!");
+                    }
+                    else{
+                        System.out.println("Zadacha c id" +deleteId+" ne naidena");
+                    }
                     break;
 
                 case "exit":
